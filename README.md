@@ -7,4 +7,4 @@ The conceptual idea is briefly shown below:
 
 --------------------------------
 The detailed structure of the proposed idea is shown below.
-![image]()
+![image](https://github.com/zhouweilian1904/TGRS_2_Multiscanning_Trans/blob/main/conceptual%20idea.png)
