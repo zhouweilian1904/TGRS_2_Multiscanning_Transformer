@@ -47,6 +47,8 @@ python main.py --model multiTrans  --dataset IndianPines --training_sample 0.1 -
 
 In the *model.py*, we have implemented many types of different designs for HSI classification. You can try it with your debug becasuse we are still modifying them. There may exist some mistakes. And also, we are sorry for the mess of the codes.
 
+The first version of our model is created in *TGRS_2.py*. We will update the newest one after the paper acceptance.
+
 --------------------------------
 **Env settings:**
 
