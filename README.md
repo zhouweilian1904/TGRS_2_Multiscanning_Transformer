@@ -40,7 +40,7 @@ you can find and add some arguments in *main.py* for your own testing.
 
 For example:
 
-python main.py --model multiTrans  --dataset IndianPines --training_sample 0.1 --cuda 0 --epoch 200 --batch_size 100 --patch_size 7
+python main.py --model multiTrans  --dataset IndianPines --training_sample 0.1 --cuda 0 --epoch 200 --batch_size 100 --class_balancing --patch_size 9 --flip_augmentation
 
 --------------------------------
 **Models:**
