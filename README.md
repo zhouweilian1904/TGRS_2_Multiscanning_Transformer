@@ -3,7 +3,7 @@ This repository is prepared for the upcoming TGRS paper.
 # Multiscanning Strategy-based RNN-Transformer for Hyperspectral Image Classification
 --------------------------------
 **The conceptual idea is briefly shown below:**
-<img src="[https://user-images.githubusercontent.com/16319829/81180309-2b51f000-8fee-11ea-8a78-ddfe8c3412a7.png](https://github.com/zhouweilian1904/TGRS_2_Multiscanning_Trans/blob/main/image%201.png)" width=50% height=50%>
+<img src="https://user-images.githubusercontent.com/16319829/81180309-2b51f000-8fee-11ea-8a78-ddfe8c3412a7.png" width=50% height=50%>
 --------------------------------
 **The detailed structure of the proposed idea is shown below.**
 ![image](https://github.com/zhouweilian1904/TGRS_2_Multiscanning_Trans/blob/main/conceptual%20idea.png)
