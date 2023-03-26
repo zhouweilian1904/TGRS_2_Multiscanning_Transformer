@@ -21,8 +21,11 @@ The goal of hyperspectral image (HSI) classification is to assign land-cover lab
 
 We have uploaded several datasets: https://drive.google.com/drive/folders/1IQxuz4jpwf6goB_2ZwVLEZz1ILScymdO?usp=share_link
 1. Indian Pines, 2. PaviaU, 3. PaviaC, 4. Botswana, 5. Houston 2013, 6. KSC, 7. Mississippi_Gulfport, 8. Salinas, 9. Simulate_database, 10. Augmented_IndianPines, 11. Augmented_Mississippi_Gulfport, 12. Augmented_PaviaU
---------------------------------
 
+--------------------------------
+**How to use:** you can find and add some arguments in *main.py* for your own testing.
+
+python main.py --model multiTrans  --dataset IndianPines --training_sample 0.1 --cuda 0 --epoch 200 --batch_size 100 --patch_size 7
 
 
 
