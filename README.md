@@ -50,6 +50,28 @@ In the *model.py*, we have implemented many types of different designs for HSI c
 The first version of our model is created in *TGRS_2.py*. We will update the newest one after the paper acceptance.
 
 --------------------------------
+**Compared methods**
+1. General ViT: https://github.com/lucidrains/vit-pytorch
+
+2. SpeFormer: https://github.com/danfenghong/IEEE_TGRS_SpectralFormer
+
+3. 1DCT: https://github.com/lironui/Double-Branch-Dual-Attention-Mechanism-Network
+
+4. SST: https://www.researchgate.net/publication/349966825_The_demo_of_Spatial-Spectral_Transformer_for_Hyperspectral_Image_Classification
+
+5. SSFTT: https://github.com/zgr6010/HSI_SSFTT
+
+6. SAT: 
+
+7. 3D-ANAS: https://github.com/hkzhang91/3D-ANAS
+
+8. CasRNN: https://github.com/RenlongHang/CasRNN
+
+9. Multi-LSTM: 
+
+
+
+--------------------------------
 **Env settings:**
 
 Pytorch:1.11.0
