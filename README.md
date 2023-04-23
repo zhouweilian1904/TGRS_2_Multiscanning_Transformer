@@ -32,7 +32,8 @@ We have uploaded several datasets: https://drive.google.com/drive/folders/1IQxuz
 10. Augmented_IndianPines, 
 11. Augmented_Mississippi_Gulfport, 
 12. Augmented_PaviaU
-** The disjoint datasets (IP, PU, HU) can be referred in https://github.com/danfenghong/IEEE_TGRS_SpectralFormer.
+13. The disjoint datasets (IP, PU, HU) can be referred in https://github.com/danfenghong/IEEE_TGRS_SpectralFormer.
+
 
 --------------------------------
 **How to use:**
