@@ -5,7 +5,7 @@ Weilian Zhou, Sei-ichiro Kamata, Haipeng Wang, Xi Xue
 
 Feel free to contact us if there is anything we can help. Thanks for your support!
 
-zhouweilian1904@akane.waseda.jp, kam@waseda.jp
+zhouweilian1904@akane.waseda.jp
 
 --------------------------------
 **The detailed structure of the proposed idea is shown below.**
