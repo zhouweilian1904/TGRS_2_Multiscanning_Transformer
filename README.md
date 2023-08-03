@@ -80,7 +80,7 @@ Pytorch:1.11.0
 
 Cuda:11.7
 
-Others: you can direct install the newest version of other packages through "pip install xxx".
+Others: you can direct install the newest version of other packages through "pip install xxx" or use packaged *pytorch_new.yml*.
 
 
 
