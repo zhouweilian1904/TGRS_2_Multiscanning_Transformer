@@ -28,12 +28,6 @@ from scipy.special import softmax
 from VitNew4_3d_learned_absolute_pos_encoding import multiscan
 
 
-# def _weights_init(m):
-#     classname = m.__class__.__name__
-#     #print(classname)
-#     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
-#         init.kaiming_normal_(m.weight)
-
 
 def pair(t):
     return t if isinstance(t, tuple) else (t, t)
@@ -97,29 +91,7 @@ class SMSA(nn.Module):
         spe_pairwise_distances = torch.cdist(x, x, p=2)
         sigma_spe = torch.mean(spe_pairwise_distances)  # adjust this parameter to control the scale of the weights
         spe_pairwise_weights = torch.exp(-spe_pairwise_distances / (2 * sigma_spe ** 2))
-        # for b in range(spe_pairwise_weights.size(0)):
-        #     if b == 1:
-        #          plt.imshow(spe_pairwise_weights[1, :,:].cpu().detach().numpy())
-        #          plt.title('batch 1')
-        #          plt.show()
-        #     elif b == 2:
-        #         plt.imshow(spe_pairwise_weights[2,:,:].cpu().detach().numpy())
-        #         plt.title('batch 2')
-        #         plt.show()
         return spe_pairwise_weights.cuda()
-
-    # def spe_mask(self, image):
-    #     b, n, d = image.shape
-    #     spe_pairwise_weights = []
-    #     for i in range(b):
-    #         x = image[i]
-    #         print('x shape',x.shape)
-    #         spe_pairwise_distances = torch.cdist(x, x, p=2)
-    #         sigma_spe = torch.mean(spe_pairwise_distances)  # adjust this parameter to control the scale of the weights
-    #         spe_pairwise_weight = torch.exp(-spe_pairwise_distances / (2 * sigma_spe ** 2))
-    #         spe_pairwise_weights.append(spe_pairwise_weight)
-    #     spe_pairwise_weights_batch = torch.stack(spe_pairwise_weights,dim=0)
-    #     return spe_pairwise_weights_batch.cuda()
 
     def spa_mask(self, x):
         b, n, d = x.shape
@@ -153,8 +125,8 @@ class SMSA(nn.Module):
         # dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale
         dots = torch.einsum('bhid,bhjd->bhij', q, k) * self.scale
         dots = dots * spe_mask * spa_mask  # acc:94.688, flip_aug:95.295
-        # dots = dots * spe_mask #acc:93.561%
-        # dots = dots * spa_mask  # acc: 93.583%
+        # dots = dots * spe_mask 
+        # dots = dots * spa_mask  
 
         attn = self.softmax(dots)
         attn = self.dropout(attn)
@@ -273,21 +245,6 @@ class LocalRNNLayer(nn.Module):
         return x
 
 
-# class RNN_SA(nn.Module):
-#     def __init__(self, dim, patch_size, depth, heads, dim_head, mlp_dim, rnn_layers=1, dropout = 0.2, ):
-#         super(RNN_SA,self).__init__()
-#         self.encoder1 = clones(
-#             LocalRNNLayer(input_dim=dim, output_dim=dim, rnn_type='GRU', ksize=patch_size, num_layer=rnn_layers, dropout=dropout), N=rnn_layers)
-#         self.encoder2 = SMSA(dim=dim, heads = heads, dim_head = dim_head, dropout = dropout)
-#         self.feed_forward = FeedForward(dim=dim, hidden_dim=dim, dropout=dropout)
-#         self.connect1 = Residual(self.encoder2, dim, dropout)
-#
-#         def forward(self, x):
-#             n, l, d  = x.shape
-#             for i, layer in enumerate(self.encoder1):
-#                 x = layer(x)
-#             x = self.connect1(x, self.encoder2())
-
 class RT(nn.Module):
     def __init__(self, dim, patch_size, depth, heads, dim_head, mlp_dim, rnn_layers=1, dropout=0.2, ):
         super().__init__()
@@ -307,7 +264,7 @@ class RT(nn.Module):
             self.layers.append(nn.ModuleList([
                 # Residual(PreNorm(dim, LSTM_with_Attention(patch_size=patch_size, embedding_dim=dim, hidden_dim=dim, output_dim=dim, n_layers=rnn_layers, dropout=dropout))),
                 Residual(PreNorm(dim, LocalRNNLayer(input_dim=dim,output_dim=dim,rnn_type='GRU',ksize=patch_size,num_layer=rnn_layers, dropout=dropout)),dim=dim,dropout=dropout),
-                # Residual(PreNorm(dim, nn.GRU(input_size=dim, hidden_size=dim,
+                # Residual(PreNorm(dim, nn.LSTM(input_size=dim, hidden_size=dim,
                 #                              num_layers=rnn_layers, dropout=dropout, batch_first=True, bias=True,
                 #                              bidirectional=False)), dim=dim, dropout=dropout),
                 Residual(PreNorm(dim, SMSA(dim, heads=heads, dim_head=dim_head, dropout=dropout)), dim=dim,
@@ -426,9 +383,9 @@ class multiTrans(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.dropout = nn.Dropout(emb_dropout)
         self.softmax = nn.Softmax(dim=-1)
-        self.point_conv_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=3)
-        self.depth_conv_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=3,
-                                      groups=input_channels)
+        # self.point_conv_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=3)
+        # self.depth_conv_1 = nn.Conv2d(in_channels=input_channels, out_channels=input_channels, kernel_size=3,
+        #                               groups=input_channels)
         self.transformer_FT = FT(dim=emb_size, heads=1, depth=1, dim_head=emb_size, dropout=False, mlp_dim=emb_size)
         self.rt_1 = RT(dim=emb_size, heads=1, depth=1, dim_head=emb_size, dropout=self.emb_dropout, mlp_dim=emb_size,
                        patch_size=patch_size)
@@ -462,15 +419,6 @@ class multiTrans(nn.Module):
             nn.Linear(emb_size, int(emb_size / 2), bias=True),
             nn.Linear(int(emb_size / 2), n_classes, bias=True)
         )
-
-        # self.reg = nn.Sequential(
-        #     nn.BatchNorm1d(emb_size),
-        #     nn.LayerNorm(emb_size),
-        #     nn.GELU(),
-        #     nn.Dropout(emb_dropout),
-        #     nn.Linear(emb_size, int(input_channels / 2), bias=True),
-        #     nn.Linear(int(input_channels / 2), input_channels, bias=True)
-        # )
         self.bn = nn.BatchNorm1d(emb_size * (9))
         self.fc = nn.Linear(emb_size, n_classes, bias=True)
         self.aux_loss_weight = 1
@@ -480,29 +428,7 @@ class multiTrans(nn.Module):
         spe_pairwise_distances = torch.cdist(x, x, p=2)
         sigma_spe = torch.mean(spe_pairwise_distances)  # adjust this parameter to control the scale of the weights
         spe_pairwise_weights = torch.exp(-spe_pairwise_distances / (2 * sigma_spe ** 2))
-        # for b in range(spe_pairwise_weights.size(0)):
-        #     if b == 1:
-        #          plt.imshow(spe_pairwise_weights[1, :,:].cpu().detach().numpy())
-        #          plt.title('batch 1')
-        #          plt.show()
-        #     elif b == 2:
-        #         plt.imshow(spe_pairwise_weights[2,:,:].cpu().detach().numpy())
-        #         plt.title('batch 2')
-        #         plt.show()
         return spe_pairwise_weights.cuda()
-
-    # def spe_mask(self, image):
-    #     b, n, d = image.shape
-    #     spe_pairwise_weights = []
-    #     for i in range(b):
-    #         x = image[i]
-    #         print('x shape',x.shape)
-    #         spe_pairwise_distances = torch.cdist(x, x, p=2)
-    #         sigma_spe = torch.mean(spe_pairwise_distances)  # adjust this parameter to control the scale of the weights
-    #         spe_pairwise_weight = torch.exp(-spe_pairwise_distances / (2 * sigma_spe ** 2))
-    #         spe_pairwise_weights.append(spe_pairwise_weight)
-    #     spe_pairwise_weights_batch = torch.stack(spe_pairwise_weights,dim=0)
-    #     return spe_pairwise_weights_batch.cuda()
 
     def spa_mask(self, x):
         b, n, d = x.shape
@@ -534,13 +460,6 @@ class multiTrans(nn.Module):
         e_m = (e_other * e_0.unsqueeze(1)).sum(dim=-1)
         print('e_m', e_m.shape)
         e_m = F.softmax(e_m, dim=1)
-        # print('d1 shape',d.shape)
-        # for b in range(d.size(0)):
-        #     if b == 1:
-        #         plt.plot(d[1, :].cpu().detach().numpy(), marker='o')
-        #     elif b == 2:
-        #         plt.plot(d[2, :].cpu().detach().numpy(), marker='x')
-        #         plt.show()
         result = FT_out * e_m.unsqueeze(-1)
         return result.cuda()
 
@@ -552,13 +471,6 @@ class multiTrans(nn.Module):
         a_m = (f_other * f_c.unsqueeze(1)).sum(dim=-1)
         print('a_m', a_m.shape)
         a_m = F.softmax(a_m, dim=1)
-        # print('d1 shape',d.shape)
-        # for b in range(a_m.size(0)):
-        #     if b == 1:
-        #         plt.plot(a_m[1, :].cpu().detach().numpy(), marker='o')
-        #     elif b == 2:
-        #         plt.plot(a_m[2, :].cpu().detach().numpy(), marker='x')
-        #         plt.show()
         result = RT_out * a_m.unsqueeze(-1)
         return result.cuda()
 
@@ -570,8 +482,6 @@ class multiTrans(nn.Module):
         x = self._overlapped_patch_2D(x=x)
         print('x', x.shape)
         x = self.to_patch_embedding(x)  # (b,n,d)
-        # x = rearrange(x, 'b n d ->b d n')
-        # x = rearrange(self.svt(x), 'b d n -> b n d')
         num_pacth = x.size(1)
         x = rearrange(x, 'b (h w) d -> b d h w', h=int((num_pacth) ** (1 / 2)), w=int((num_pacth) ** (1 / 2)))
         # viz.images(x[1, [55,41,12], :, :],opts={'title':'image'})
@@ -579,47 +489,47 @@ class multiTrans(nn.Module):
         print('0', x.shape)
         # x = rearrange(x,'b c h w -> b h w c')
 
-        x1 = x
-        x1r = x1.reshape(x1.shape[0], x1.shape[1], -1)
+        # x1 = x
+        # x1r = x1.reshape(x1.shape[0], x1.shape[1], -1)
 
-        x2 = x1r.cpu()
-        x2rn = np.flip(x2.detach().numpy(), axis=2).copy()
-        x2rt = torch.from_numpy(x2rn)
-        x2r = x2rt.cuda()
+        # x2 = x1r.cpu()
+        # x2rn = np.flip(x2.detach().numpy(), axis=2).copy()
+        # x2rt = torch.from_numpy(x2rn)
+        # x2r = x2rt.cuda()
 
-        x3 = torch.transpose(x1, 2, 3)
-        x3r = x3.reshape(x3.shape[0], x3.shape[1], -1)
+        # x3 = torch.transpose(x1, 2, 3)
+        # x3r = x3.reshape(x3.shape[0], x3.shape[1], -1)
 
-        x4 = x3r.cpu()
-        x4rn = np.flip(x4.detach().numpy(), axis=2).copy()
-        x4rt = torch.from_numpy(x4rn)
-        x4r = x4rt.cuda()
+        # x4 = x3r.cpu()
+        # x4rn = np.flip(x4.detach().numpy(), axis=2).copy()
+        # x4rt = torch.from_numpy(x4rn)
+        # x4r = x4rt.cuda()
 
-        x5 = torch.rot90(x1, 1, (2, 3))
-        x5r = x5.reshape(x5.shape[0], x5.shape[1], -1)
+        # x5 = torch.rot90(x1, 1, (2, 3))
+        # x5r = x5.reshape(x5.shape[0], x5.shape[1], -1)
 
-        x6 = x5r.cpu()
-        x6rn = np.flip(x6.detach().numpy(), axis=2).copy()
-        x6rt = torch.from_numpy(x6rn)
-        x6r = x6rt.cuda()
+        # x6 = x5r.cpu()
+        # x6rn = np.flip(x6.detach().numpy(), axis=2).copy()
+        # x6rt = torch.from_numpy(x6rn)
+        # x6r = x6rt.cuda()
 
-        x7 = torch.transpose(x5, 2, 3)
-        x7r = x7.reshape(x7.shape[0], x7.shape[1], -1)
+        # x7 = torch.transpose(x5, 2, 3)
+        # x7r = x7.reshape(x7.shape[0], x7.shape[1], -1)
 
-        x8 = x7r.cpu()
-        x8rn = np.flip(x8.detach().numpy(), axis=2).copy()
-        x8rt = torch.from_numpy(x8rn)
-        x8r = x8rt.cuda()
-        print('x8r', x8r.shape)  # batch, fea dim, steps
+        # x8 = x7r.cpu()
+        # x8rn = np.flip(x8.detach().numpy(), axis=2).copy()
+        # x8rt = torch.from_numpy(x8rn)
+        # x8r = x8rt.cuda()
+        # print('x8r', x8r.shape)  # batch, fea dim, steps
 
-        # x1r = multiscan(x, 1).cuda()
-        # x2r = multiscan(x, 2).cuda()
-        # x3r = multiscan(x, 3).cuda()
-        # x4r = multiscan(x, 4).cuda()
-        # x5r = multiscan(x, 5).cuda()
-        # x6r = multiscan(x, 6).cuda()
-        # x7r = multiscan(x, 7).cuda()
-        # x8r = multiscan(x, 8).cuda()  # (b c s)
+        x1r = multiscan(x, 1).cuda()
+        x2r = multiscan(x, 2).cuda()
+        x3r = multiscan(x, 3).cuda()
+        x4r = multiscan(x, 4).cuda()
+        x5r = multiscan(x, 5).cuda()
+        x6r = multiscan(x, 6).cuda()
+        x7r = multiscan(x, 7).cuda()
+        x8r = multiscan(x, 8).cuda()  # (b c s)
 
         x1r = self.pre_emd(rearrange(x1r, 'b d n -> b n d'))
         x2r = self.pre_emd(rearrange(x2r, 'b d n -> b n d'))
