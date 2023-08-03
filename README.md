@@ -1,4 +1,4 @@
-# Multiscanning Strategy-based RNN-Transformer for Hyperspectral Image Classification. (resubmit major revision)
+# Multiscanning Strategy-based RNN-Transformer for Hyperspectral Image Classification.
 
 --------------------------------
 Weilian Zhou, Sei-ichiro Kamata, Haipeng Wang, Xi Xue
@@ -42,14 +42,14 @@ you can find and add some arguments in *main.py* for your own testing.
 
 For example:
 
-python main.py --model multiTrans  --dataset IndianPines --training_sample 0.1 --cuda 0 --epoch 200 --batch_size 100 --class_balancing --patch_size 9 --flip_augmentation
+python main.py --model multiTrans  --dataset IndianPines --training_sample 0.1 --cuda 0 --epoch 200 --batch_size 100 --class_balancing --patch_size 9
 
 --------------------------------
 **Models:**
 
-In the *model.py*, we have implemented many types of different designs for HSI classification. You can try it with your debug becasuse we are still modifying them. There may exist some mistakes. And also, we are sorry for the mess of the codes.
+In the *model.py*, we have implemented many types of different designs for HSI classification. You can try it with your debug becasuse we are still modifying them. There may exist some mistakes. 
 
-The first version of our model is created in *TGRS_2.py*. We will update the newest one after the paper acceptance.
+The first version of our model is created in *TGRS_2.py*.
 
 --------------------------------
 **Compared methods**
