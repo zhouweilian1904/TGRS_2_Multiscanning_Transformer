@@ -2,7 +2,7 @@
 
 --------------------------------
 W. Zhou, S. -I. Kamata, H. Wang and X. Xue, "Multiscanning-Based RNN–Transformer for Hyperspectral Image Classification," in IEEE Transactions on Geoscience and Remote Sensing, vol. 61, pp. 1-19, 2023, Art no. 5512319, doi: 10.1109/TGRS.2023.3277014.
-keywords: {Transformers;Hyperspectral imaging;Task analysis;Recurrent neural networks;Feature extraction;Decoding;Spectral analysis;Hyperspectral image (HSI) classification;multiscanning strategy;recurrent neural network (RNN);Transformer},
+
 --------------------------------
 Weilian Zhou, Sei-ichiro Kamata, Haipeng Wang, Xi Xue
 
@@ -12,6 +12,7 @@ zhouweilian1904@akane.waseda.jp
 
 --------------------------------
 **The detailed structure of the proposed idea is shown below.**
+
 ![image](https://github.com/zhouweilian1904/TGRS_2_Multiscanning_Trans/blob/main/conceptual%20idea.png)
 
 --------------------------------
